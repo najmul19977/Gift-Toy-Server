@@ -37,6 +37,21 @@ async function run() {
         const cursor = productCollection.find();
         const result = await cursor.toArray();
         res.send(result)
+    });
+
+    app.post('/products',async(req,res) =>{
+      const body = req.body;
+      const result= await productCollection.insertOne(body);
+      console.log(result);
+      res.send(result);
+      
+      console.log(body);
+    });
+
+    app.get('/mytoys/:email',async(req,res) =>{
+      console.log(req.params.email);
+      const result = await productCollection.find({postedBy:req.params.email}).toArray();
+      res.send(result);
     })
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
