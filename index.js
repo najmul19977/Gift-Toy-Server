@@ -33,6 +33,21 @@ async function run() {
     await client.connect();
      const productCollection = client.db('giftToy').collection('products');
 
+
+     const indexKey = {title:1};
+     const indexOptions = {name:'titleCategory'};
+
+     const result = await productCollection.createIndex(indexKey,indexOptions);
+
+     app.get('/toySearchByTitle/:text',async (req,res) =>{
+      const searchText = req.params.text;
+
+      const result = await productCollection.find({
+        title:{$regex:searchText,$options:"i"}
+      }).toArray();
+      res.send(result);
+     })
+
     app.get('/products',async(req,res) =>{
         const cursor = productCollection.find();
         const result = await cursor.toArray();
