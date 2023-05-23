@@ -53,13 +53,29 @@ async function run() {
         const result = await cursor.toArray();
         res.send(result)
     });
-     // view page                
-    app.get('/products/:id',async(req,res) =>{
+
+
+    app.put("/toys/:id", async (req, res) => {
       const id = req.params.id;
-      const query = {_id:new ObjectId(id)}
-      const result = await productCollection.findOne(query);
+      const filter = { _id: new ObjectId(id) };
+      const options = { upsert: true };
+      const updateToy = req.body;
+      const data = {
+        $set: {
+          title: updateToy.title,
+          /* sellerName: updateToy.sellerName, */
+          postedBy: updateToy.postedBy,
+          img: updateToy.img,
+          price: updateToy.price,
+          rating: updateToy.rating,
+         /*  quantity: updateToy.quantity, */
+          description: updateToy.description,
+        },
+      };
+      const result = await productCollection.updateOne(filter, data, options);
       res.send(result);
-    })
+    });
+   
 
     app.post('/products',async(req,res) =>{
       const body = req.body;
@@ -75,6 +91,14 @@ async function run() {
       const result = await productCollection.find({postedBy:req.params.email}).toArray();
       res.send(result);
     });
+
+      // view page                
+    app.get('/products/:id',async(req,res) =>{
+      const id = req.params.id;
+      const query = {_id:new ObjectId(id)}
+      const result = await productCollection.findOne(query);
+      res.send(result);
+    })
 
     app.delete ('/mytoys/:id',async(req,res) =>{
       const id = req.params.id;
